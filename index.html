@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audrey Delmas Fouegap Sonkeng — Portfolio AI &amp; Data Science</title>
+<meta name="description" content="Portfolio di Audrey Delmas Fouegap Sonkeng, studentessa di Intelligenza Artificiale e Analisi dei Dati all'Università di Trieste. Progetti di data analysis, SQL e Python.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230B1220'/%3E%3Ccircle cx='30' cy='65' r='7' fill='%235B8DEF'/%3E%3Ccircle cx='50' cy='45' r='7' fill='%235B8DEF'/%3E%3Ccircle cx='70' cy='58' r='7' fill='%23E8A33D'/%3E%3Cpath d='M30 65 L50 45 L70 58' stroke='%235B8DEF' stroke-width='3' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1220;
+    --ink-alt:#0F1830;
+    --paper:#F5F3ED;
+    --signal:#5B8DEF;
+    --amber:#E8A33D;
+    --muted:#8B93A7;
+    --grid-line: rgba(139,147,167,0.12);
+
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'JetBrains Mono', monospace;
+
+    --max-w: 1100px;
+    --section-pad: 8rem;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--font-body);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+
+  /* ---------- Background coordinate grid ---------- */
+  .grid-field{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 64px 64px;
+    pointer-events:none;
+  }
+
+  .grid-dot{
+    position:fixed;
+    width:5px; height:5px;
+    border-radius:50%;
+    background:var(--signal);
+    opacity:0.6;
+    z-index:0;
+    pointer-events:none;
+  }
+
+  /* ---------- Layout helpers ---------- */
+  .wrap{
+    max-width:var(--max-w);
+    margin:0 auto;
+    padding:0 2rem;
+    position:relative;
+    z-index:1;
+  }
+
+  section{
+    padding:var(--section-pad) 0;
+    border-bottom:1px solid var(--grid-line);
+  }
+
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:0.8rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--signal);
+    display:flex;
+    align-items:center;
+    gap:0.6rem;
+    margin-bottom:1.2rem;
+  }
+  .eyebrow::before{
+    content:"";
+    width:24px; height:1px;
+    background:var(--signal);
+  }
+
+  h1,h2,h3{
+    font-family:var(--font-display);
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+
+  a{ color:inherit; text-decoration:none; }
+
+  /* ---------- Nav ---------- */
+  header{
+    position:fixed;
+    top:0; left:0; right:0;
+    z-index:10;
+    backdrop-filter:blur(10px);
+    background:rgba(11,18,32,0.75);
+    border-bottom:1px solid var(--grid-line);
+  }
+  nav.wrap{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:1.2rem 2rem;
+  }
+  .nav-mark{
+    font-family:var(--font-mono);
+    font-size:0.95rem;
+    color:var(--paper);
+  }
+  .nav-mark span{ color:var(--signal); }
+  .nav-links{
+    display:flex;
+    gap:2rem;
+    font-family:var(--font-mono);
+    font-size:0.82rem;
+    letter-spacing:0.04em;
+  }
+  .nav-links a{
+    color:var(--muted);
+    transition:color 0.2s ease;
+  }
+  .nav-links a:hover{ color:var(--paper); }
+
+  .nav-toggle{
+    display:none;
+    flex-direction:column;
+    justify-content:center;
+    gap:5px;
+    width:32px;
+    height:32px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:0;
+  }
+  .nav-toggle span{
+    display:block;
+    width:100%;
+    height:2px;
+    background:var(--paper);
+    transition:transform 0.25s ease, opacity 0.25s ease;
+  }
+  .nav-toggle.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+  .nav-toggle.open span:nth-child(2){ opacity:0; }
+  .nav-toggle.open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+
+  .mobile-panel{
+    display:none;
+    flex-direction:column;
+    background:var(--ink-alt);
+    border-top:1px solid var(--grid-line);
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.3s ease;
+  }
+  .mobile-panel.open{ max-height:280px; }
+  .mobile-panel a{
+    padding:1rem 2rem;
+    font-family:var(--font-mono);
+    font-size:0.9rem;
+    color:var(--muted);
+    border-bottom:1px solid var(--grid-line);
+  }
+  .mobile-panel a:hover{ color:var(--signal); }
+
+  /* ---------- Hero ---------- */
+  #home{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    padding-top:6rem;
+  }
+  .hero-kicker{
+    font-family:var(--font-mono);
+    color:var(--muted);
+    font-size:0.85rem;
+    margin-bottom:1.5rem;
+  }
+  .hero-kicker .cursor{
+    display:inline-block;
+    width:8px; height:1em;
+    background:var(--signal);
+    margin-left:2px;
+    animation:blink 1s step-end infinite;
+    vertical-align:middle;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  h1.hero-title{
+    font-size:clamp(2.5rem, 6vw, 4.5rem);
+    line-height:1.05;
+    max-width:14ch;
+  }
+  h1.hero-title .accent{ color:var(--signal); }
+
+  .hero-sub{
+    max-width:48ch;
+    color:var(--muted);
+    font-size:1.1rem;
+    margin-top:1.5rem;
+  }
+
+  .hero-cta{
+    display:flex;
+    gap:1rem;
+    margin-top:2.5rem;
+    flex-wrap:wrap;
+  }
+  .btn{
+    font-family:var(--font-mono);
+    font-size:0.85rem;
+    padding:0.9rem 1.6rem;
+    border-radius:2px;
+    border:1px solid var(--grid-line);
+    transition:all 0.2s ease;
+    display:inline-flex;
+    align-items:center;
+    gap:0.5rem;
+  }
+  .btn-primary{
+    background:var(--signal);
+    color:var(--ink);
+    border-color:var(--signal);
+  }
+  .btn-primary:hover{ opacity:0.85; }
+  .btn-secondary{ color:var(--paper); }
+  .btn-secondary:hover{ border-color:var(--signal); color:var(--signal); }
+
+  /* ---------- About ---------- */
+  .about-grid{
+    display:grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap:4rem;
+    align-items:start;
+  }
+  .about-text p{
+    color:var(--muted);
+    margin-bottom:1.2rem;
+    max-width:56ch;
+  }
+  .stat-list{
+    display:flex;
+    flex-direction:column;
+    gap:1.5rem;
+    border-left:1px solid var(--grid-line);
+    padding-left:2rem;
+  }
+  .stat-item .stat-num{
+    font-family:var(--font-mono);
+    font-size:1.8rem;
+    color:var(--signal);
+  }
+  .stat-item .stat-label{
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+  }
+
+  /* ---------- Projects ---------- */
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:3rem;
+    flex-wrap:wrap;
+    gap:1rem;
+  }
+  .section-head h2{ font-size:2rem; }
+  .section-head .section-note{
+    font-family:var(--font-mono);
+    font-size:0.8rem;
+    color:var(--muted);
+  }
+
+  .project-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap:1.5rem;
+  }
+  .project-card{
+    border:1px solid var(--grid-line);
+    padding:2rem;
+    position:relative;
+    transition:border-color 0.2s ease, transform 0.2s ease;
+  }
+  .project-card:hover{
+    border-color:var(--signal);
+    transform:translateY(-3px);
+  }
+  .project-tag{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    color:var(--amber);
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    margin-bottom:1rem;
+    display:block;
+  }
+  .project-card h3{
+    font-size:1.25rem;
+    margin-bottom:0.8rem;
+  }
+  .project-card p{
+    color:var(--muted);
+    font-size:0.92rem;
+    margin-bottom:1.5rem;
+  }
+  .project-stack{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0.5rem;
+  }
+  .project-stack span{
+    font-family:var(--font-mono);
+    font-size:0.7rem;
+    color:var(--muted);
+    border:1px solid var(--grid-line);
+    padding:0.25rem 0.6rem;
+    border-radius:2px;
+  }
+  .project-link{
+    margin-top:1.5rem;
+    display:inline-flex;
+    align-items:center;
+    gap:0.4rem;
+    font-family:var(--font-mono);
+    font-size:0.8rem;
+    color:var(--signal);
+  }
+  .project-card.placeholder{
+    border-style:dashed;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--muted);
+    font-family:var(--font-mono);
+    font-size:0.85rem;
+    min-height:220px;
+    text-align:center;
+  }
+
+  /* ---------- Skills ---------- */
+  .skills-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(240px,1fr));
+    gap:2.5rem;
+  }
+  .skill-group .eyebrow{ margin-bottom:1rem; }
+  .skill-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0.6rem;
+  }
+  .skill-tags span{
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    padding:0.5rem 0.9rem;
+    border:1px solid var(--grid-line);
+    border-radius:2px;
+    color:var(--paper);
+  }
+
+  /* ---------- Education ---------- */
+  .timeline{
+    display:flex;
+    flex-direction:column;
+    gap:2.5rem;
+  }
+  .timeline-item{
+    display:grid;
+    grid-template-columns: 140px 1fr;
+    gap:2rem;
+  }
+  .timeline-date{
+    font-family:var(--font-mono);
+    font-size:0.82rem;
+    color:var(--signal);
+  }
+  .timeline-item h3{ font-size:1.15rem; margin-bottom:0.4rem; }
+  .timeline-item p{ color:var(--muted); font-size:0.92rem; }
+
+  /* ---------- Contact ---------- */
+  #contact{ border-bottom:none; padding-bottom:6rem; }
+  .contact-inner{
+    text-align:center;
+    max-width:640px;
+    margin:0 auto;
+  }
+  .contact-inner h2{
+    font-size:clamp(2rem, 5vw, 3rem);
+    margin-bottom:1.2rem;
+  }
+  .contact-inner p{ color:var(--muted); margin-bottom:2.5rem; }
+  .contact-links{
+    display:flex;
+    justify-content:center;
+    gap:2rem;
+    flex-wrap:wrap;
+    font-family:var(--font-mono);
+    font-size:0.9rem;
+  }
+  .contact-links a{
+    color:var(--paper);
+    border-bottom:1px solid var(--grid-line);
+    padding-bottom:2px;
+    transition:color 0.2s ease, border-color 0.2s ease;
+  }
+  .contact-links a:hover{ color:var(--signal); border-color:var(--signal); }
+
+  footer{
+    text-align:center;
+    padding:2rem 0;
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    color:var(--muted);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:800px){
+    .about-grid{ grid-template-columns:1fr; }
+    .stat-list{ border-left:none; padding-left:0; flex-direction:row; flex-wrap:wrap; }
+    .nav-links{ display:none; }
+    .nav-toggle{ display:flex; }
+    .mobile-panel{ display:flex; }
+    :root{ --section-pad: 5rem; }
+    .timeline-item{ grid-template-columns:1fr; gap:0.5rem; }
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    .hero-kicker .cursor{ animation:none; }
+  }
+
+  /* Keyboard focus visibility */
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--signal);
+    outline-offset:3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-field"></div>
+
+<header>
+  <nav class="wrap">
+    <div class="nav-mark">a<span>.</span>delmas</div>
+    <div class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#about">Chi Sono</a>
+      <a href="#projects">Progetti</a>
+      <a href="#contact">Contatti</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Apri il menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-panel" id="mobilePanel">
+    <a href="#home">Home</a>
+    <a href="#about">Chi Sono</a>
+    <a href="#projects">Progetti</a>
+    <a href="#contact">Contatti</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== HOME / HERO ===== -->
+  <section id="home">
+    <div class="wrap">
+      <div class="hero-kicker">Studente di IA e Analisi dei Dati — Università di Trieste<span class="cursor"></span></div>
+      <h1 class="hero-title">Ciao, sono <span class="accent">Audrey Delmas Fouegap Sonkeng</span>.<br>Costruisco con i dati.</h1>
+      <p class="hero-sub">
+        I dati grezzi sono la mia materia prima. Le decisioni strategiche,
+        il risultato.
+      </p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-primary">Vedi i Progetti →</a>
+        <a href="#contact" class="btn btn-secondary">Contattami</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section id="about">
+    <div class="wrap">
+      <div class="eyebrow">Chi Sono</div>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>
+            Sono al terzo anno del corso di laurea in Intelligenza Artificiale
+            e Analisi dei Dati all'Università di Trieste. Quello che mi
+            affascina dei dati è la loro capacità di raccontare storie che
+            altrimenti resterebbero invisibili — e di trasformarsi in
+            decisioni concrete.
+          </p>
+          <p>
+            Attualmente mi concentro sul consolidare le basi in machine
+            learning e analisi statistica, applicandole a progetti reali.
+            L'obiettivo è un tirocinio o una prima esperienza professionale
+            a livello internazionale, dove i dati contano davvero.
+          </p>
+        </div>
+        <div class="stat-list">
+          <div class="stat-item">
+            <div class="stat-num">3°</div>
+            <div class="stat-label">Anno — Laurea Triennale in corso</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label" style="margin-bottom:0.6rem;">Lingue</div>
+            <div class="skill-tags">
+              <span>FR — madrelingua</span>
+              <span>IT — B2</span>
+              <span>EN — A2, in corso verso B2</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROJECTS ===== -->
+  <section id="projects">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Progetti</div>
+          <h2>Lavori selezionati</h2>
+        </div>
+      </div>
+      <div class="project-grid">
+
+        <div class="project-card">
+          <span class="project-tag">Database Design · SQL</span>
+          <h3>City Estate</h3>
+          <p>Progettazione e modellazione di un database relazionale nel settore immobiliare, sviluppato interamente da zero come progetto universitario. Documentazione completa del modello inclusa.</p>
+          <div class="project-stack">
+            <span>SQL</span>
+            <span>Modellazione DB</span>
+          </div>
+          <a href="https://github.com/Delmasfouegap/DATA-ANALYSIS-PROJECTS/blob/main/City_Estate.sql" target="_blank" rel="noopener" class="project-link">Vedi su GitHub →</a>
+        </div>
+
+        <div class="project-card">
+          <span class="project-tag">SQL Querying</span>
+          <h3>Classic Model</h3>
+          <p>Analisi di un database aziendale esistente tramite query SQL, per estrarre insight su vendite, clienti e prodotti.</p>
+          <div class="project-stack">
+            <span>SQL</span>
+          </div>
+          <a href="https://github.com/Delmasfouegap/DATA-ANALYSIS-PROJECTS/blob/main/Classic_model.sql" target="_blank" rel="noopener" class="project-link">Vedi su GitHub →</a>
+        </div>
+
+        <div class="project-card">
+          <span class="project-tag">Exploratory Data Analysis</span>
+          <h3>Employee Performance</h3>
+          <p>Analisi dei divari di performance tra i reparti aziendali, esplorando la relazione tra soddisfazione dei dipendenti, punteggio di performance e ore lavorate settimanali.</p>
+          <div class="project-stack">
+            <span>Python</span>
+            <span>Pandas</span>
+          </div>
+          <a href="https://github.com/Delmasfouegap/DATA-ANALYSIS-PROJECTS/blob/main/Python-Employee_Performance.ipynb" target="_blank" rel="noopener" class="project-link">Vedi su GitHub →</a>
+        </div>
+
+        <div class="project-card">
+          <span class="project-tag">Exploratory Data Analysis</span>
+          <h3>SuperStore Analysis</h3>
+          <p>Analisi delle interazioni tra prodotti, performance regionali e margini di vendita, per ottimizzare le strategie commerciali di un'azienda retail.</p>
+          <div class="project-stack">
+            <span>Python</span>
+            <span>Pandas</span>
+          </div>
+          <a href="https://github.com/Delmasfouegap/DATA-ANALYSIS-PROJECTS/blob/main/Python-SuperStore.ipynb" target="_blank" rel="noopener" class="project-link">Vedi su GitHub →</a>
+        </div>
+
+        <div class="project-card">
+          <span class="project-tag">Data Analysis</span>
+          <h3>Progetto 1 — Analisi Dipendenti</h3>
+          <p>Primo progetto di analisi dati: studio delle prestazioni dei dipendenti per individuare lacune e aree di miglioramento.</p>
+          <div class="project-stack">
+            <span>Python</span>
+          </div>
+          <a href="https://github.com/Delmasfouegap/DATA-ANALYSIS-PROJECTS/blob/main/project_1%20D-A.ipynb" target="_blank" rel="noopener" class="project-link">Vedi su GitHub →</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section id="contact">
+    <div class="wrap contact-inner">
+      <div class="eyebrow" style="justify-content:center;">Contatti</div>
+      <h2>Parliamone.</h2>
+      <p>Aperto a tirocini, collaborazioni e problemi interessanti legati ai dati.</p>
+      <div class="contact-links">
+        <a href="mailto:delmasfouegap5@gmail.com">delmasfouegap5@gmail.com</a>
+        <a href="https://github.com/Delmasfouegap/DATA-ANALYSIS-PROJECTS" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/delmas-fouegap-87606b358/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">© 2026 Audrey Delmas Fouegap Sonkeng — Costruito pensando ai dati.</div>
+</footer>
+
+<script>
+  const navToggle = document.getElementById('navToggle');
+  const mobilePanel = document.getElementById('mobilePanel');
+
+  navToggle.addEventListener('click', () => {
+    const isOpen = mobilePanel.classList.toggle('open');
+    navToggle.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', isOpen);
+  });
+
+  mobilePanel.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      mobilePanel.classList.remove('open');
+      navToggle.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>
+</body>
+</html>
